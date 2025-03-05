@@ -1,0 +1,59 @@
+{
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/nthris-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/nthris-server",
+        "main": "apps/nthris-server/src/main.ts",
+        "tsConfig": "apps/nthris-server/tsconfig.app.json",
+        "assets": ["apps/nthris-server/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/nthris-server/src/environments/environment.ts",
+              "with": "apps/nthris-server/src/environments/environment.prod.ts"
+            }
+          ],
+          "generatePackageJson": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "nthris-server:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/nthris-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/nthris-server"],
+      "options": {
+        "jestConfig": "apps/nthris-server/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build nthris-server --configuration=production && docker buildx build --no-cache  --platform linux/amd64 -f apps/nthris-server/Dockerfile . -t nthris-server"
+      }
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,62 @@
+{
+  "name": "gra-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/gra-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/gra-server",
+        "main": "apps/gra-server/src/main.ts",
+        "tsConfig": "apps/gra-server/tsconfig.app.json",
+        "assets": ["apps/gra-server/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/gra-server/src/environments/environment.ts",
+              "with": "apps/gra-server/src/environments/environment.prod.ts"
+            }
+          ],
+          "generatePackageJson": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "gra-server:build",
+        "port": 3000,
+        "inspect": false
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/gra-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/gra-server"],
+      "options": {
+        "jestConfig": "apps/gra-server/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build gra-server --configuration=production && docker buildx build --no-cache  --platform linux/amd64 -f apps/gra-server/Dockerfile . -t gra-server"
+      }
+    }
+  },
+  "tags": []
+}

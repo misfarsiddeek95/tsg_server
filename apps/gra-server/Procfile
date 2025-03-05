@@ -1,0 +1,1 @@
+web: node dist/apps/gra-server/main.js

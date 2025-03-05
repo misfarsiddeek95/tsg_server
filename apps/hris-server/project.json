@@ -1,0 +1,62 @@
+{
+  "name": "hris-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/hris-server/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/hris-server",
+        "main": "apps/hris-server/src/main.ts",
+        "tsConfig": "apps/hris-server/tsconfig.app.json",
+        "assets": ["apps/hris-server/src/assets"]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "apps/hris-server/src/environments/environment.ts",
+              "with": "apps/hris-server/src/environments/environment.prod.ts"
+            }
+          ],
+          "generatePackageJson": true
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "hris-server:build",
+        "port": 3003,
+        "inspect": false
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["apps/hris-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/hris-server"],
+      "options": {
+        "jestConfig": "apps/hris-server/jest.config.js",
+        "passWithNoTests": true
+      }
+    },
+    "docker-build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build hris-server --configuration=production && docker buildx build --no-cache  --platform linux/amd64 -f apps/hris-server/Dockerfile . -t hris-server"
+      }
+    }
+  },
+  "tags": []
+}

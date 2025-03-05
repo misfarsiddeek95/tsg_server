@@ -1,0 +1,1 @@
+web: node dist/apps/gaa-server/main.js
